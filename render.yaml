@@ -1,0 +1,54 @@
+services:
+  - type: web
+    name: batang-inocencio
+    env: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        value: base64:UhMnfICQyod0T042Vq+KYeF32g4l5OxEkjrbdh+w+F8=
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        value: https://batang-inocencio.onrender.com
+
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        value: yamanote.proxy.rlwy.net
+      - key: DB_PORT
+        value: 38575
+      - key: DB_DATABASE
+        value: railway
+      - key: DB_USERNAME
+        value: root
+      - key: DB_PASSWORD
+        value: KPREEgRjeRUIMqQjioBXMVzYzlEQSlxr
+
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USERNAME
+        value: batanginocencio.sk@gmail.com
+      - key: MAIL_PASSWORD
+        value: ypcewokrelrmpexo
+      - key: MAIL_ENCRYPTION
+        value: tls
+      - key: MAIL_FROM_ADDRESS
+        value: batanginocencio.sk@gmail.com
+      - key: MAIL_FROM_NAME
+        value: "Batang Inocencio"
+
+      - key: SESSION_DRIVER
+        value: database
+
+      - key: VITE_APP_NAME
+        value: Laravel
+      - key: VITE_APP_BASE_URL
+        value: https://batang-inocencio.onrender.com
