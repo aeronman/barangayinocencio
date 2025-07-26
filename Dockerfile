@@ -1,43 +1,33 @@
-FROM php:8.2-fpm
+# Use PHP Apache image
+FROM php:8.2-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    curl \
-    git \
-    npm \
-    nodejs \
-    supervisor \
-    default-mysql-client \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    unzip zip git curl libpng-dev libonig-dev libxml2-dev \
+    nodejs npm
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Enable Apache mod_rewrite
+RUN a2enmod rewrite
 
 # Set working directory
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-# Copy project files
+# Copy app files
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Install PHP deps
+RUN curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer && \
+    composer install --no-dev --optimize-autoloader
 
-# Install Node dependencies and build
+# Install JS deps and build frontend (Vite output goes into public/)
 RUN npm install && npm run build
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www
+# Set correct permissions
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-EXPOSE 8000
+# Apache will serve from public/ by default if we configure it
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
-CMD ["php", "-S", "0.0.0.0:8000", "-t", ".", "index.php"]
-
-
+# Expose port
+EXPOSE 80
