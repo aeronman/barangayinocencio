@@ -1,0 +1,104 @@
+/* 🌟 Calendar Container */
+.react-calendar {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  padding: 1rem;
+  transition: all 0.3s ease-in-out;
+  width: 100%;
+}
+
+/* 📅 Navigation Bar */
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.react-calendar__navigation button {
+  background-color: #2348cc !important;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease-in-out;
+  margin: 2px !important;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #1a38a0 !important;
+}
+
+.react-calendar__navigation button:disabled {
+  background-color: #f1f3f5 !important;
+  color: #adb5bd;
+  cursor: not-allowed;
+}
+
+
+/* 📆 Weekdays Header */
+.react-calendar__month-view__weekdays {
+  background: #f8f9fa;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2348cc; /* $primary */
+}
+
+/* 🔘 Day Tiles */
+.react-calendar__tile {
+  border-radius: 0.75rem;
+  padding: 0.75rem 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+  transition: all 0.25s ease-in-out;
+  text-align: center;
+  padding-top: 25px;
+  padding-bottom: 25px;
+}
+
+.react-calendar__tile:enabled:hover {
+  background-color: #2348cc;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* 🌞 Today */
+.react-calendar__tile--now {
+  background-color: #ffab00; /* $warning */
+  color: #000;
+  font-weight: 600;
+  border: 2px solid #ffc107;
+}
+
+/* ✅ Selected Day */
+.react-calendar__tile--active {
+  background-color: #0cb009; /* $success */
+  color: white;
+  font-weight: 700;
+}
+
+/* 🧠 Focused Day */
+.react-calendar__tile:enabled:focus {
+  background-color: #6081f6; /* $info */
+  color: white;
+  outline: none;
+}
+
+/* ❌ Disabled Days */
+.react-calendar__tile:disabled {
+  color: #ccc;
+  background: none;
+  cursor: not-allowed;
+}

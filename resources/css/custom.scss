@@ -1,0 +1,9 @@
+// Override Bootstrap Variables
+$primary: #2348cc;
+// $secondary: #ff0000;
+$success: #0cb009;
+$info: #6081f6;
+$warning: #ffab00;
+$danger: #d50000;
+
+@import "/../../node_modules/bootstrap/scss/bootstrap.scss";

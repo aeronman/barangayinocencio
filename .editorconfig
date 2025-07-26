@@ -1,0 +1,55 @@
+# Root EditorConfig file
+# root = true
+
+# Default settings for all files
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Markdown – don't trim trailing spaces (used for formatting)
+[*.md]
+trim_trailing_whitespace = false
+
+# YAML – indent with 2 spaces (standard practice)
+[*.{yml,yaml}]
+indent_size = 2
+
+# Docker Compose – override YAML to use 4 spaces
+[docker-compose.yml]
+indent_size = 4
+
+# JSON – always use 2 spaces
+[*.{json,jsonc}]
+indent_size = 2
+
+# JavaScript/TypeScript – use 2 spaces
+[*.{js,jsx,ts,tsx}]
+indent_size = 2
+
+# HTML, CSS, SCSS – use 2 spaces
+[*.{html,css,scss}]
+indent_size = 2
+
+# PHP files – use 4 spaces (common standard)
+[*.php]
+indent_size = 4
+
+# Shell scripts – use tabs
+[*.sh]
+indent_style = tab
+
+# Makefiles – require tab indentation
+[Makefile]
+indent_style = tab
+
+# XML files – use 2 spaces
+[*.xml]
+indent_size = 2
+
+# Git ignore and config files – no trimming
+[*.{gitignore,gitattributes,editorconfig}]
+trim_trailing_whitespace = false
