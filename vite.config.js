@@ -4,7 +4,7 @@ import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: process.env.APP_URL + '/build/', // 👈 dynamically uses your HTTPS domain
+  base: 'https://batang-inocencio.onrender.com/build/', // <-- force HTTPS
   build: {
     outDir: 'public/build',
     emptyOutDir: true,
