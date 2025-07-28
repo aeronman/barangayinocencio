@@ -1,53 +1,50 @@
-FROM php:8.2-fpm
+# Build stage (Node/Vite)
+FROM node:18-alpine as build
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# PHP + Composer stage
+FROM php:8.2-fpm-alpine as backend
+
+# Install PHP extensions
+RUN apk add --no-cache \
+    bash \
+    curl \
     libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip unzip curl git \
-    supervisor \
+    libjpeg-turbo-dev \
+    libwebp-dev \
+    libzip-dev \
+    unzip \
     nginx \
-    default-mysql-client \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    supervisor \
+    freetype-dev \
+    oniguruma-dev \
+    icu-dev \
+    zlib-dev \
+    libxml2-dev \
+    mysql-client \
+    && docker-php-ext-install pdo pdo_mysql zip intl bcmath
 
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www
+COPY --from=build /app /var/www
 
-# Copy project files
-COPY . .
+RUN composer install --optimize-autoloader --no-dev
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Build frontend assets (if using Vite)
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install && npm run build
-
-# Set permissions
-RUN chown -R www-data:www-data /var/www
-
-# Laravel config caching
-RUN php artisan config:clear && \
-    php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
+# Laravel permissions
+RUN chown -R www-data:www-data /var/www \
+ && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Copy nginx config
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy supervisor config
-COPY supervisord.conf /etc/supervisord.conf
-
-# Expose HTTP port
+# Expose port 80
 EXPOSE 80
 
-# Start via supervisor
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+CMD ["sh", "-c", "php-fpm & nginx -g 'daemon off;'"]
