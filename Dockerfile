@@ -8,14 +8,10 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
-    zip \
-    unzip \
-    curl \
-    git \
+    zip unzip curl git \
     supervisor \
+    nginx \
     default-mysql-client \
-    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Install Composer
@@ -24,20 +20,34 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy project files
-COPY . .
-
-# Install PHP dependencies
+# Copy composer files and install deps
+COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader
 
-# Install Node dependencies and build Vite
-RUN npm install && npm run build
+# Copy the rest of the project files
+COPY . .
+
+# Build frontend assets (if using Vite)
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install && npm run build
+
+# Cache Laravel configs (optional: only if .env is already valid)
+RUN php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www
 
-# Expose the port Laravel's built-in server will run on
-EXPOSE 8000
+# Copy nginx config
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 
-# Start Laravel's built-in web server
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Copy Supervisor config
+COPY supervisord.conf /etc/supervisord.conf
+
+# Expose HTTP port
+EXPOSE 80
+
+# Start supervisor to run both php-fpm and nginx
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
