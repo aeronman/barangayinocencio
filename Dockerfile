@@ -20,12 +20,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy composer files and install deps
-COPY composer.json composer.lock ./ 
-RUN composer install --no-dev --optimize-autoloader
-
-# Copy the rest of the project
+# Copy the entire Laravel project **before** running composer
 COPY . .
+
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
 
 # Build frontend assets (optional, only if using Vite or similar)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
