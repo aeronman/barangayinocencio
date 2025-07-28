@@ -10,7 +10,7 @@
         content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://trecebatanginocencio.site/" /> --}}
 
     <title>Batang Inocencio</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/Logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ secure_asset('images/Logo.png') }}">
 
     @viteReactRefresh
     @vite('resources/js/main.jsx')
