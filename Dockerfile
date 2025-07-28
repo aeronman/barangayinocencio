@@ -1,6 +1,5 @@
 FROM php:8.2-fpm
 
-
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -37,9 +36,8 @@ RUN npm install && npm run build
 # Set permissions
 RUN chown -R www-data:www-data /var/www
 
-# OPTIONAL: Run Laravel commands if needed
-# RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
+# Expose the port Laravel's built-in server will run on
+EXPOSE 8000
 
-# Use PHP-FPM to serve
-EXPOSE 9000
-CMD ["php-fpm"]
+# Start Laravel's built-in web server
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
