@@ -20,5 +20,5 @@ $remoteAddress = $_SERVER['REMOTE_ADDR'].':'.$_SERVER['REMOTE_PORT'];
 
 file_put_contents('php://stdout', "[$formattedDateTime] $remoteAddress [$requestMethod] URI: $uri\n");
 
-require_once __DIR__.'/index.php';
-
+// ✅ Fixed path to index.php
+require_once __DIR__.'/public/index.php';
