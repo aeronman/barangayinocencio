@@ -1,53 +1,39 @@
+# -------- BASE IMAGE --------
 FROM php:8.2-fpm
 
-# Install system dependencies
+# -------- SYSTEM DEPENDENCIES --------
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip unzip curl git \
-    supervisor \
-    nginx \
-    default-mysql-client \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    git curl zip unzip libzip-dev libpng-dev libonig-dev libxml2-dev \
+    npm nodejs gnupg2 ca-certificates lsb-release \
+    && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# -------- COMPOSER INSTALL --------
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
-WORKDIR /
+# -------- SET WORKDIR --------
+WORKDIR /var/www
 
-# Copy all project files to /
+# -------- COPY FILES --------
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Build frontend assets (if using Vite)
+# -------- NODEJS INSTALL --------
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
     npm install && npm run build
 
-# Set permissions
-RUN chown -R www-data:www-data .
+# -------- PERMISSIONS --------
+RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www
 
-# Laravel config caching
-RUN php artisan config:clear && \
-    php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
+# -------- ARTISAN SETUP --------
+RUN cp .env.example .env && \
+    php artisan key:generate
 
-# Copy nginx config
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+# -------- SUPERVISOR --------
+RUN apt-get install -y supervisor
+COPY ./supervisord.conf /etc/supervisord.conf
 
-# Copy supervisor config
-COPY supervisord.conf /etc/supervisord.conf
-
-# Expose HTTP port
+# -------- PORT --------
 EXPOSE 80
 
-# Start via supervisor
+# -------- START --------
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
