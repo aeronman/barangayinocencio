@@ -17,9 +17,10 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Set working directory
+WORKDIR /
 
-
-# Copy project files
+# Copy all project files to /
 COPY . .
 
 # Install PHP dependencies
@@ -31,7 +32,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     npm install && npm run build
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www
+RUN chown -R www-data:www-data .
 
 # Laravel config caching
 RUN php artisan config:clear && \
