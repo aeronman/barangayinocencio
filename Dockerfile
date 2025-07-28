@@ -16,6 +16,9 @@ WORKDIR /var/www
 # -------- COPY APP FILES --------
 COPY . .
 
+# ✅ ✅ ✅ ADD THIS: Copy .env file
+COPY .env .env
+
 # -------- NODEJS + BUILD ASSETS --------
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
@@ -27,7 +30,7 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 # -------- PERMISSIONS --------
 RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www
 
-# -------- ARTISAN SETUP --------
+# ✅ ✅ ✅ Ensure .env exists before Artisan commands
 RUN php artisan key:generate && \
     php artisan config:cache && \
     php artisan route:cache && \
