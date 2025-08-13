@@ -383,22 +383,33 @@ const MembershipRegistration = () => {
                     <div className="mb-3">
                       <label className="form-label">Contact Number</label>
                       <input
-                        type="number"
+                        type="tel"
                         name="contact_number"
                         className="form-control"
                         value={formData.contact_number || ""}
                         onChange={(e) => {
-                          const value = e.target.value;
-                          if (/^\d*$/.test(value)) {
-                            if (value.length <= 11) {
-                              handleChange(e);
-                            }
+                          let value = e.target.value.replace(/\D/g, ""); // only digits
+
+                          // Limit to 11 digits
+                          if (value.length > 11) {
+                            value = value.slice(0, 11);
                           }
+
+                          // Must start with 09 (PH mobile)
+                          if (value && !/^09\d{0,9}$/.test(value)) {
+                            return; // block invalid pattern
+                          }
+
+                          handleChange({
+                            target: { name: e.target.name, value }
+                          });
                         }}
                         maxLength={11}
+                        placeholder="09XXXXXXXXX"
                         required
                       />
                     </div>
+
                     <div className="d-flex justify-content-between mt-4">
                       <button
                         className="btn btn-secondary"

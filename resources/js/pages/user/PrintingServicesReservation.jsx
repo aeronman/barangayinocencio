@@ -186,24 +186,33 @@ function PrintingServicesReservation() {
 
 
                 <div className="mb-3">
-                  <label className="form-label">Contact Number</label>
-                  <input
-                    name="contact_number"
-                    type="tel"
-                    className="form-control"
-                    value={formData.contact_number}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (/^\d*$/.test(value)) {
-                        if (value.length <= 11) {
-                          handleChange(e);
-                        }
-                      }
-                    }}
-                    maxLength={11}
-                    required
-                  />
-                </div>
+                <label className="form-label">Contact Number</label>
+                <input
+                  name="contact_number"
+                  type="tel"
+                  className="form-control"
+                  value={formData.contact_number}
+                  onChange={(e) => {
+                    let value = e.target.value.replace(/\D/g, ""); // allow only digits
+
+                    // Limit to 11 digits
+                    if (value.length > 11) value = value.slice(0, 11);
+
+                    // Allow only numbers starting with '09' and exactly 11 digits
+                    if (value && !/^09\d{0,9}$/.test(value)) {
+                      return; // block invalid pattern
+                    }
+
+                    handleChange({
+                      target: { name: e.target.name, value }
+                    });
+                  }}
+                  maxLength={11}
+                  required
+                  placeholder="09XXXXXXXXX"
+                />
+              </div>
+
 
                 <div className="mb-3">
                   <label className="form-label">Paper Size</label>

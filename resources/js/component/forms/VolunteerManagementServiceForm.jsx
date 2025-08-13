@@ -191,16 +191,42 @@ function VolunteerManagementServiceForm() {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Contact Number</label>
-                <input
-                  name="contact_number"
-                  type="tel"
-                  className="form-control"
-                  value={formData.contact_number}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+  <label htmlFor="contact_number" className="form-label">
+    Contact Number
+  </label>
+  <input
+    type="tel"
+    className="form-control"
+    id="contact_number"
+    name="contact_number"
+    value={eventDetails.contact_number}
+    onChange={(e) => {
+      let value = e.target.value.replace(/\D/g, ""); // only digits
+
+      // Limit to 11 digits
+      if (value.length > 11) {
+        value = value.slice(0, 11);
+      }
+
+      // Must start with 09 (PH mobile numbers)
+      if (value && !/^09\d{0,9}$/.test(value)) {
+        return; // block invalid pattern
+      }
+
+      handleInputChange({
+        target: { name: e.target.name, value }
+      });
+    }}
+    maxLength={11}
+    placeholder="09XXXXXXXXX"
+    required
+    aria-describedby="contactHelp"
+  />
+  <small id="contactHelp" className="form-text text-muted">
+    Enter a valid Philippine mobile number.
+  </small>
+</div>
+
               <div className="mb-3">
                 <label className="form-label">Contact Person</label>
                 <input

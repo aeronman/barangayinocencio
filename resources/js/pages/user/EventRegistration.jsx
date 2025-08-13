@@ -271,19 +271,30 @@ const EventRegistration = () => {
                         required
                         value={participantFormData.contact_number || ""}
                         onChange={(e) => {
-                          const value = e.target.value;
-                          if (/^\d*$/.test(value)) {
-                            if (value.length <= 11) {
-                              handleParticipantChange(e);
-                            }
+                          let value = e.target.value.replace(/\D/g, ""); // allow only digits
+
+                          // Limit to 11 digits max
+                          if (value.length > 11) {
+                            value = value.slice(0, 11);
                           }
+
+                          // Must start with '09' (Philippines mobile numbers)
+                          if (value && !/^09\d{0,9}$/.test(value)) {
+                            return; // block invalid pattern
+                          }
+
+                          handleParticipantChange({
+                            target: { name: e.target.name, value }
+                          });
                         }}
                         maxLength={11}
+                        placeholder="09XXXXXXXXX"
                       />
                       <div className="invalid-feedback">
-                        Please enter a valid contact number.
+                        Please enter a valid Philippine mobile number.
                       </div>
                     </div>
+
 
                     <div className="col-md-8">
                       <label
