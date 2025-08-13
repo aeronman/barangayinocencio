@@ -607,26 +607,58 @@ function ComputerRentCalendar() {
                 </div>
 
                 {["name", "address", "email", "contact"].map((field, index) => (
-                  <div className="mb-3" key={index}>
-                    <label className="form-label">
-                      {field === "contact"
-                        ? "Contact Number"
-                        : field.charAt(0).toUpperCase() + field.slice(1)}
-                    </label>
-                    <input
-                      type={field === "email" ? "email" : "text"}
-                      className="form-control"
-                      name={field}
-                      value={formData[field]}
-                      onChange={handleInputChange}
-                      required
-                    />
-                    <div className="invalid-feedback">
-                      Please enter a valid{" "}
-                      {field === "contact" ? "contact number" : field}.
-                    </div>
-                  </div>
-                ))}
+  <div className="mb-3" key={index}>
+    <label className="form-label">
+      {field === "contact"
+        ? "Contact Number"
+        : field.charAt(0).toUpperCase() + field.slice(1)}
+    </label>
+
+    {field === "contact" ? (
+      <input
+        type="tel"
+        className="form-control"
+        name={field}
+        value={formData[field]}
+        onChange={(e) => {
+          let value = e.target.value.replace(/\D/g, ""); // digits only
+
+          // Limit to 11 digits
+          if (value.length > 11) {
+            value = value.slice(0, 11);
+          }
+
+          // Must start with 09 (PH mobile number)
+          if (value && !/^09\d{0,9}$/.test(value)) {
+            return; // invalid, block change
+          }
+
+          handleInputChange({
+            target: { name: e.target.name, value }
+          });
+        }}
+        maxLength={11}
+        placeholder="09XXXXXXXXX"
+        required
+      />
+    ) : (
+      <input
+        type={field === "email" ? "email" : "text"}
+        className="form-control"
+        name={field}
+        value={formData[field]}
+        onChange={handleInputChange}
+        required
+      />
+    )}
+
+    <div className="invalid-feedback">
+      Please enter a valid{" "}
+      {field === "contact" ? "Philippine mobile number" : field}.
+    </div>
+  </div>
+))}
+
 
                 <div className="modal-footer px-0">
                   <button
